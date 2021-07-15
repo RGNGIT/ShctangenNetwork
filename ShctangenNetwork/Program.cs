@@ -48,6 +48,7 @@ namespace ShctangenNetwork
                 Console.WriteLine("Вроде прогнал циклы. Пусть клиент зачекает\nОжидание реквеста с клиента...");
                 CleanInput();
                 CleanServer();
+                Thread.Sleep(3000);
             }
             catch(Exception e)
             {
