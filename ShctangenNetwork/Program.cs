@@ -11,10 +11,7 @@ namespace ShctangenNetwork
 
         public Program()
         {
-            if(File.Exists("GetInput.shc"))
-            {
-                File.Delete("GetInput.shc");
-            }
+            CleanInput();
         }
 
         static void Main(string[] args)
@@ -48,6 +45,9 @@ namespace ShctangenNetwork
                 Thread.Sleep(1000);
                 SetDB();
                 StartGauge();
+                Console.WriteLine("Вроде прогнал циклы. Пусть клиент зачекает\nОжидание реквеста с клиента...");
+                CleanInput();
+                CleanServer();
             }
             catch(Exception e)
             {
@@ -63,6 +63,19 @@ namespace ShctangenNetwork
             Process.Start("GaugeBlockv3-1.exe");
             calc.ProgramCycles();
             new Network(credential, URL).SendOutput(File.ReadAllBytes("SetOutput.shc"));
+        }
+
+        static void CleanInput()
+        {
+            if (File.Exists("GetInput.shc"))
+            {
+                File.Delete("GetInput.shc");
+            }
+        }
+
+        static void CleanServer()
+        {
+            new Network(credential, URL).Delete(new Uri($"ftp://{URL}/files/ShctangenNetwork/Input.shc"));
         }
 
         static BinaryFormatter binaryFormatter = new BinaryFormatter();
