@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using WindowsInput;
 using System.Windows.Forms;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace ShctangenNetwork
 {
@@ -106,11 +107,13 @@ namespace ShctangenNetwork
         [System.Runtime.InteropServices.DllImport("User32.dll")]
         public static extern bool ShowWindow(IntPtr handle, int nCmdShow);
         InputSimulator simulator = new InputSimulator();
-        string Entry;
+        public string Entry;
         int iterator = 1;
 
-        void ProgramCycles(int cycleI)
+        public void ProgramCycles()
         {
+            Thread.Sleep(3000);
+            GridBlock gridBlock = new GridBlock();
             IntPtr w = FindWindow(null, "Поиск лучшего набора и расчет характеристик");
             // IntPtr frm1 = FindWindow(null, "Form1");
             // f = frm1;
@@ -122,7 +125,7 @@ namespace ShctangenNetwork
             {
                 simulator.Keyboard.KeyPress(WindowsInput.Native.VirtualKeyCode.TAB);
             }
-            for (int i = cycleI; i < Database.l1.Count; i++)
+            for (int i = 0; i < Database.l1.Count; i++)
             {
 
                 simulator.Keyboard.ModifiedKeyStroke(WindowsInput.Native.VirtualKeyCode.CONTROL, WindowsInput.Native.VirtualKeyCode.VK_A);
@@ -169,10 +172,36 @@ namespace ShctangenNetwork
                 }
                 iterator++;
                 string Ns = ("n1 = " + Database.p1[i] + " n2 = " + Database.p2[i] + " n3 = " + Database.p3[i] + " n4 = " + Database.p4[i] + " n5 = " + Database.p5[i]).ToString();
-
+                gridBlock.Summ.Add(Database.l1[i] + Database.l2[i] + Database.l3[i] + Database.l4[i] + Database.l5[i]);
+                gridBlock.KE.Add(KE.ToString());
+                gridBlock.LowerBorder.Add(LowerBorder.ToString());
+                gridBlock.UpperBorder.Add(UpperBorder.ToString());
+                gridBlock.o.Add(Database.o[i].ToString());
+                gridBlock.LongestStep.Add(LongestStep.ToString());
+                gridBlock.NoRepeatAmount.Add(NoRepeatAmount.ToString());
+                gridBlock.Ns.Add(Ns);
+                Console.WriteLine($"Итерация: {i}: " +
+                    $"Сумма = '{Database.l1[i] + Database.l2[i] + Database.l3[i] + Database.l4[i] + Database.l5[i]}', " +
+                    $"KE = '{KE}', " +
+                    $"LowerBorder = '{LowerBorder}', " +
+                    $"UpperBorder = '{UpperBorder}', " +
+                    $"o = '{Database.o[i]}', " +
+                    $"LongestStep = '{LongestStep}', " +
+                    $"NoRepeatAmount = '{NoRepeatAmount}', " +
+                    $"Ns = '{Ns}'");
             }
             SendKeys.SendWait("%{F4}");
+            Serializer(gridBlock);
+        }
 
+        BinaryFormatter binaryFormatter = new BinaryFormatter();
+
+        void Serializer(GridBlock data)
+        {
+            using (FileStream fileStream = new FileStream("SetOutput.shc", FileMode.OpenOrCreate))
+            {
+                binaryFormatter.Serialize(fileStream, data);
+            }
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 
 namespace ShctangenNetwork
@@ -10,19 +11,22 @@ namespace ShctangenNetwork
 
         public Program()
         {
-
+            if(File.Exists("GetInput.shc"))
+            {
+                File.Delete("GetInput.shc");
+            }
         }
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Введите адрес сервера");
+            Console.WriteLine("Введите адрес сервера-моста");
             URL = Console.ReadLine();
-            if (new Network(null).Ping(URL))
+            if (new Network(null, null).Ping(URL))
             {
+                Console.WriteLine("Ожидание реквеста с клиента...");
                 while (true) // Главный прослушивающий цикл
                 {
-                    IsCalculating();
-                    ReadInput();
+                    Listen();
                     Thread.Sleep(1000);
                 }
             }
@@ -30,56 +34,74 @@ namespace ShctangenNetwork
 
         static string URL;
 
-        /*
-         * Структура флагов
-         * line 0 - Состояние вычислений
-         * line 1 - Готовность сторон (0 - Сервер готов, 1 - Сервер считает)
-        */
+        static System.Net.NetworkCredential credential = new System.Net.NetworkCredential()
+        {
+            UserName = "testuser",
+            Password = "12345678"
+        };
 
-        static bool GaugeStarted = false;
-
-        static void IsCalculating()
+        static void Listen()
         {
             try
             {
-                Network network = new Network(new System.Net.NetworkCredential("testuser", "12345678"));
-                File.WriteAllBytes("GetFlags.shc", network.GetInput(new Uri($"ftp://{URL}/files/ShctangenNetwork/Flags.shc")));
-                if (!GaugeStarted && File.ReadAllLines("GetFlags.shc")[0] == "1")
-                {
-                    Process.Start(@"GaugeBlockv3-1.exe");
-                    GaugeStarted = true;
-                }
+                File.WriteAllBytes("GetInput.shc", new Network(credential, URL).GetInput(new Uri($"ftp://{URL}/files/ShctangenNetwork/Input.shc")));
+                Thread.Sleep(1000);
+                SetDB();
+                StartGauge();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
-                Console.WriteLine(e);
+                // Console.WriteLine(e);
             }
         }
 
-        static void ReadInput()
+        static void StartGauge()
         {
-            if (File.Exists("GetInput.shc"))
-            {
-                File.Delete("GetInput.shc");
-            }
-            try
-            {
-                Network network = new Network(new System.Net.NetworkCredential("testuser", "12345678"));
-                File.WriteAllBytes("GetInput.shc", network.GetInput(new Uri($"ftp://{URL}/files/ShctangenNetwork/Input.shc")));
-                foreach (string i in File.ReadAllLines("GetInput.shc"))
-                {
-                    Console.WriteLine(i); // Вызов расчета туть
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e); // Ожидание
-            }
+            Console.WriteLine("Получили базу первичных расчетов. Стартуем прогу школьников и запускаем циклы...");
+            Calc calc = new Calc();
+            calc.Entry = GetBlock().Entry;
+            Process.Start("GaugeBlockv3-1.exe");
+            calc.ProgramCycles();
+            new Network(credential, URL).SendOutput(File.ReadAllBytes("SetOutput.shc"));
         }
 
-        static void WriteOutput()
-        {
+        static BinaryFormatter binaryFormatter = new BinaryFormatter();
 
+        static CodenameShctangencircle.DataBlock GetBlock()
+        {
+           CodenameShctangencircle.DataBlock DeserializeBlock;
+            using (FileStream fileStream = new FileStream("GetInput.shc", FileMode.OpenOrCreate))
+            {
+                DeserializeBlock = binaryFormatter.Deserialize(fileStream) as CodenameShctangencircle.DataBlock;
+            }
+            return DeserializeBlock;
+        }
+
+        static void SetDB()
+        {
+            Database.o = GetBlock().o;
+            Database.o1 = GetBlock().o1;
+            Database.o2 = GetBlock().o2;
+            Database.o3 = GetBlock().o3;
+            Database.o4 = GetBlock().o4;
+            Database.o5 = GetBlock().o5;
+            Database.p1 = GetBlock().p1;
+            Database.p2 = GetBlock().p2;
+            Database.p3 = GetBlock().p3;
+            Database.p4 = GetBlock().p4;
+            Database.p5 = GetBlock().p5;
+            Database.GridCount = GetBlock().GridCount;
+            Database.Count = GetBlock().Count;
+            Database.l1 = GetBlock().l1;
+            Database.l2 = GetBlock().l2;
+            Database.l3 = GetBlock().l3;
+            Database.l4 = GetBlock().l4;
+            Database.l5 = GetBlock().l5;
+            Database.KE = GetBlock().KE;
+            Database.KSR = GetBlock().KSR;
+            Database.SDM = GetBlock().SDM;
+            Database.VGU = GetBlock().VGU;
+            Database.NGU = GetBlock().NGU;
         }
 
     }

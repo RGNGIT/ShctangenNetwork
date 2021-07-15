@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CodenameShctangencircle">
+      <HintPath>..\..\RGNGIT\CodenameShctangencircle\CodenameShctangencircle\CodenameShctangencircle\bin\Debug\CodenameShctangencircle.exe</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
@@ -49,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Calc.cs" />
     <Compile Include="Database.cs" />
+    <Compile Include="GridBlock.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

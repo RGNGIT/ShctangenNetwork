@@ -1,18 +1,22 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Text;
 
 namespace ShctangenNetwork
 {
     class Network
     {
 
-        public Network(NetworkCredential credential)
+        public Network(NetworkCredential credential, string URL)
         {
             this.credential = credential;
+            this.URL = URL;
         }
 
         NetworkCredential credential;
+        string URL;
 
         public bool Ping(string URL)
         {
@@ -43,14 +47,38 @@ namespace ShctangenNetwork
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Произошло исключение: {e}");
+                if (e.HResult != -2146233079)
+                {
+                    Console.WriteLine($"Произошло исключение: {e.Message}");
+                }
                 return null;
             }
         }
 
         public void SendOutput(byte[] OutputData)
         {
-
+            try
+            {
+                string PFN = new FileInfo("Output.shc").Name;
+                string UploadURL = $"ftp://{URL}/files/ShctangenNetwork/{PFN}";
+                FtpWebRequest request = WebRequest.Create(UploadURL) as FtpWebRequest;
+                request.Method = WebRequestMethods.Ftp.UploadFile;
+                request.Credentials = credential;
+                request.Proxy = null;
+                request.KeepAlive = true;
+                request.UseBinary = true;
+                byte[] fileContents = OutputData;
+                request.ContentLength = fileContents.Length;
+                Stream requestStream = request.GetRequestStream();
+                requestStream.Write(fileContents, 0, fileContents.Length);
+                requestStream.Close();
+                FtpWebResponse response = (FtpWebResponse)request.GetResponse();
+                Console.WriteLine(response.StatusDescription);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"Произошло исключение: {e.Message}");
+            }
         }
 
     }
