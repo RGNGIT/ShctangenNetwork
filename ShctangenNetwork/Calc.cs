@@ -180,15 +180,15 @@ namespace ShctangenNetwork
                 gridBlock.LongestStep.Add(LongestStep.ToString());
                 gridBlock.NoRepeatAmount.Add(NoRepeatAmount.ToString());
                 gridBlock.Ns.Add(Ns);
-                Console.WriteLine($"Итерация: {i}: " +
-                    $"Сумма = '{Database.l1[i] + Database.l2[i] + Database.l3[i] + Database.l4[i] + Database.l5[i]}', " +
-                    $"KE = '{KE}', " +
-                    $"LowerBorder = '{LowerBorder}', " +
-                    $"UpperBorder = '{UpperBorder}', " +
-                    $"o = '{Database.o[i]}', " +
-                    $"LongestStep = '{LongestStep}', " +
-                    $"NoRepeatAmount = '{NoRepeatAmount}', " +
-                    $"Ns = '{Ns}'");
+                Console.WriteLine($"Итерация: {i}: \n" +
+                    $"Сумма = '{Database.l1[i] + Database.l2[i] + Database.l3[i] + Database.l4[i] + Database.l5[i]}', \n" +
+                    $"KE = '{KE}', \n" +
+                    $"LowerBorder = '{LowerBorder}', \n" +
+                    $"UpperBorder = '{UpperBorder}', \n" +
+                    $"o = '{Database.o[i]}', \n" +
+                    $"LongestStep = '{LongestStep}', \n" +
+                    $"NoRepeatAmount = '{NoRepeatAmount}', \n" +
+                    $"Ns = '{Ns}'\n");
             }
             SendKeys.SendWait("%{F4}");
             Serializer(gridBlock);
