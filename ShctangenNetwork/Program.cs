@@ -19,6 +19,9 @@ namespace ShctangenNetwork
         {
             Console.WriteLine("Введите адрес сервера-моста");
             URL = Console.ReadLine();
+            Console.WriteLine("Придумайте идентификатор сессии");
+            ID += Console.ReadLine();
+            Console.WriteLine(new Network(credential, URL).CreateSessionDir(ID));
             if (new Network(null, null).Ping(URL))
             {
                 Console.WriteLine("Ожидание реквеста с клиента...");
@@ -30,7 +33,7 @@ namespace ShctangenNetwork
             }
         }
 
-        static string URL;
+        static string URL, ID = "_shctangenNetworkSessionId_";
 
         static System.Net.NetworkCredential credential = new System.Net.NetworkCredential()
         {
@@ -42,7 +45,7 @@ namespace ShctangenNetwork
         {
             try
             {
-                File.WriteAllBytes("GetInput.shc", new Network(credential, URL).GetInput(new Uri($"ftp://{URL}/files/ShctangenNetwork/Input.shc")));
+                File.WriteAllBytes("GetInput.shc", new Network(credential, URL).GetInput(new Uri($"ftp://{URL}/files/ShctangenNetwork/{ID}/Input.shc")));
                 Thread.Sleep(1000);
                 SetDB();
                 StartGauge();
@@ -64,7 +67,7 @@ namespace ShctangenNetwork
             calc.Entry = GetBlock().Entry;
             Process.Start("GaugeBlockv3-1.exe");
             calc.ProgramCycles();
-            new Network(credential, URL).SendOutput(File.ReadAllBytes("SetOutput.shc"));
+            new Network(credential, URL).SendOutput(File.ReadAllBytes("SetOutput.shc"), ID);
         }
 
         static void CleanInput()
@@ -77,7 +80,7 @@ namespace ShctangenNetwork
 
         static void CleanServer()
         {
-            new Network(credential, URL).Delete(new Uri($"ftp://{URL}/files/ShctangenNetwork/Input.shc"));
+            new Network(credential, URL).Delete(new Uri($"ftp://{URL}/files/ShctangenNetwork/{ID}/Input.shc"));
         }
 
         static BinaryFormatter binaryFormatter = new BinaryFormatter();

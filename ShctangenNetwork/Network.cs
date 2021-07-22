@@ -71,12 +71,12 @@ namespace ShctangenNetwork
             }
         }
 
-        public void SendOutput(byte[] OutputData)
+        public void SendOutput(byte[] OutputData, string ID)
         {
             try
             {
                 string PFN = new FileInfo("Output.shc").Name;
-                string UploadURL = $"ftp://{URL}/files/ShctangenNetwork/{PFN}";
+                string UploadURL = $"ftp://{URL}/files/ShctangenNetwork/{ID}/{PFN}";
                 FtpWebRequest request = WebRequest.Create(UploadURL) as FtpWebRequest;
                 request.Method = WebRequestMethods.Ftp.UploadFile;
                 request.Credentials = credential;
@@ -94,6 +94,22 @@ namespace ShctangenNetwork
             catch(Exception e)
             {
                 Console.WriteLine($"Произошло исключение: {e.Message}");
+            }
+        }
+
+        public string CreateSessionDir(string ID)
+        {
+            try
+            {
+                FtpWebRequest Request = WebRequest.Create($"ftp://{URL}/files/ShctangenNetwork/{ID}") as FtpWebRequest;
+                Request.Method = WebRequestMethods.Ftp.MakeDirectory;
+                Request.Credentials = credential;
+                FtpWebResponse Response = Request.GetResponse() as FtpWebResponse;
+                return $"Директория сессии успешно создана (ShctangenNetwork/{ID})!";
+            }
+            catch (Exception e)
+            {
+                return e.ToString();
             }
         }
 
