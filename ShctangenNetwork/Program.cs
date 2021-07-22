@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
+using ShctangenNetLib;
 
 namespace ShctangenNetwork
 {
@@ -81,12 +82,12 @@ namespace ShctangenNetwork
 
         static BinaryFormatter binaryFormatter = new BinaryFormatter();
 
-        static CodenameShctangencircle.DataBlock GetBlock()
+        static DataBlock GetBlock()
         {
-           CodenameShctangencircle.DataBlock DeserializeBlock;
+            DataBlock DeserializeBlock;
             using (FileStream fileStream = new FileStream("GetInput.shc", FileMode.OpenOrCreate))
             {
-                DeserializeBlock = binaryFormatter.Deserialize(fileStream) as CodenameShctangencircle.DataBlock;
+                DeserializeBlock = binaryFormatter.Deserialize(fileStream) as DataBlock;
             }
             return DeserializeBlock;
         }
