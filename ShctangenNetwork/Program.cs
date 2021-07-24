@@ -17,19 +17,31 @@ namespace ShctangenNetwork
 
         static void Main(string[] args)
         {
+            Console.CancelKeyPress += Console_CancelKeyPress;
             Console.WriteLine("Введите адрес сервера-моста");
             URL = Console.ReadLine();
             Console.WriteLine("Придумайте идентификатор сессии");
             ID += Console.ReadLine();
-            Console.WriteLine(new Network(credential, URL).CreateSessionDir(ID));
+            ControlSession(true);
             if (new Network(null, null).Ping(URL))
             {
-                Console.WriteLine("Ожидание реквеста с клиента...");
+                Console.WriteLine(
+                    "Для завершения работы сервера нажмите Ctrl + C или Ctrl + Break\n" +
+                    "Ожидание реквеста с клиента...");
                 while (true) // Главный прослушивающий цикл
                 {
                     Listen();
                     Thread.Sleep(1000);
                 }
+            }
+        }
+
+        private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            if (ID != "_shctangenNetworkSessionId_") {
+                ControlSession(false);
+                Console.WriteLine("Завершение...");
+                Environment.Exit(-1);
             }
         }
 
@@ -49,7 +61,10 @@ namespace ShctangenNetwork
                 Thread.Sleep(1000);
                 SetDB();
                 StartGauge();
-                Console.WriteLine("Вроде прогнал циклы. Пусть клиент зачекает\nОжидание реквеста с клиента...");
+                Console.WriteLine(
+                    "Вроде прогнал циклы. Пусть клиент зачекает\n" +
+                    "Для завершения работы сервера нажмите Ctrl + C или Ctrl + Break\n" +
+                    "Ожидание реквеста с клиента...");
                 CleanInput();
                 CleanServer();
                 Thread.Sleep(3000);
@@ -81,6 +96,18 @@ namespace ShctangenNetwork
         static void CleanServer()
         {
             new Network(credential, URL).Delete(new Uri($"ftp://{URL}/files/ShctangenNetwork/{ID}/Input.shc"));
+        }
+
+        static void ControlSession(bool OnCreate)
+        {
+            if(OnCreate)
+            {
+                Console.WriteLine(new Network(credential, URL).CreateSessionDir(ID));
+            }
+            else
+            {
+                Console.WriteLine(new Network(credential, URL).RemoveSessionDir(ID));
+            }
         }
 
         static BinaryFormatter binaryFormatter = new BinaryFormatter();

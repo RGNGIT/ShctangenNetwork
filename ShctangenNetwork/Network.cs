@@ -113,5 +113,21 @@ namespace ShctangenNetwork
             }
         }
 
+        public string RemoveSessionDir(string ID)
+        {
+            try
+            {
+                FtpWebRequest Request = WebRequest.Create($"ftp://{URL}/files/ShctangenNetwork/{ID}/") as FtpWebRequest;
+                Request.Method = WebRequestMethods.Ftp.RemoveDirectory;
+                Request.Credentials = credential;
+                FtpWebResponse Response = Request.GetResponse() as FtpWebResponse;
+                return $"Директория сессии успешно очищена!";
+            }
+            catch (Exception e)
+            {
+                return e.ToString();
+            }
+        }
+
     }
 }
