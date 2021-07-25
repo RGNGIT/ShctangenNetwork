@@ -75,7 +75,7 @@ namespace ShctangenNetwork
         {
             try
             {
-                string PFN = new FileInfo("Output.shc").Name;
+                string PFN = new FileInfo("Output.wshc").Name;
                 string UploadURL = $"ftp://{URL}/files/ShctangenNetwork/{ID}/{PFN}";
                 FtpWebRequest request = WebRequest.Create(UploadURL) as FtpWebRequest;
                 request.Method = WebRequestMethods.Ftp.UploadFile;
