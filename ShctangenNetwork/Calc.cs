@@ -199,7 +199,7 @@ namespace ShctangenNetwork
 
         void Serializer(GridBlock data)
         {
-            using (FileStream fileStream = new FileStream("SetOutput.shc", FileMode.OpenOrCreate))
+            using (FileStream fileStream = new FileStream("SetOutput.wshc", FileMode.OpenOrCreate))
             {
                 binaryFormatter.Serialize(fileStream, data);
             }
