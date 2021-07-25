@@ -57,7 +57,7 @@ namespace ShctangenNetwork
         {
             try
             {
-                File.WriteAllBytes("GetInput.shc", new Network(credential, URL).GetInput(new Uri($"ftp://{URL}/files/ShctangenNetwork/{ID}/Input.shc")));
+                File.WriteAllBytes("GetInput.wshc", new Network(credential, URL).GetInput(new Uri($"ftp://{URL}/files/ShctangenNetwork/{ID}/Input.wshc")));
                 Thread.Sleep(1000);
                 SetDB();
                 StartGauge();
@@ -82,20 +82,20 @@ namespace ShctangenNetwork
             calc.Entry = GetBlock().Entry;
             Process.Start("GaugeBlockv3-1.exe");
             calc.ProgramCycles();
-            new Network(credential, URL).SendOutput(File.ReadAllBytes("SetOutput.shc"), ID);
+            new Network(credential, URL).SendOutput(File.ReadAllBytes("SetOutput.wshc"), ID);
         }
 
         static void CleanInput()
         {
-            if (File.Exists("GetInput.shc"))
+            if (File.Exists("GetInput.wshc"))
             {
-                File.Delete("GetInput.shc");
+                File.Delete("GetInput.wshc");
             }
         }
 
         static void CleanServer()
         {
-            new Network(credential, URL).Delete(new Uri($"ftp://{URL}/files/ShctangenNetwork/{ID}/Input.shc"));
+            new Network(credential, URL).Delete(new Uri($"ftp://{URL}/files/ShctangenNetwork/{ID}/Input.wshc"));
         }
 
         static void ControlSession(bool OnCreate)
@@ -115,7 +115,7 @@ namespace ShctangenNetwork
         static DataBlock GetBlock()
         {
             DataBlock DeserializeBlock;
-            using (FileStream fileStream = new FileStream("GetInput.shc", FileMode.OpenOrCreate))
+            using (FileStream fileStream = new FileStream("GetInput.wshc", FileMode.OpenOrCreate))
             {
                 DeserializeBlock = binaryFormatter.Deserialize(fileStream) as DataBlock;
             }
